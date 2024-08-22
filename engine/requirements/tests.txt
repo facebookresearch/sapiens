@@ -9,6 +9,6 @@ lmdb
 mlflow
 neptune
 parameterized
-pydantic==1.10.9
+pydantic>=1.10.13
 pytest
 transformers
