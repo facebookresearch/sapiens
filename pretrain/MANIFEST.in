@@ -1,0 +1,5 @@
+include requirements/*.txt
+include mmpretrain/.mim/model-index.yml
+include mmpretrain/.mim/dataset-index.yml
+recursive-include mmpretrain/.mim/configs *.py *.yml
+recursive-include mmpretrain/.mim/tools *.py *.sh

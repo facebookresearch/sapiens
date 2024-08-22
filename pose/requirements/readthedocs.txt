@@ -1,0 +1,9 @@
+mmcv>=2.0.0rc4
+mmengine>=0.6.0,<1.0.0
+munkres
+regex
+scipy
+titlecase
+torch>1.6
+torchvision
+xtcocotools>=1.13
