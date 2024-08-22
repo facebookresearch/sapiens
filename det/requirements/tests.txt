@@ -11,7 +11,7 @@ kwarray
 memory_profiler
 -e git+https://github.com/open-mmlab/mmtracking@dev-1.x#egg=mmtrack
 nltk
-onnx==1.7.0
+onnx>=1.16.0
 onnxruntime>=1.8.0
 parameterized
 prettytable
