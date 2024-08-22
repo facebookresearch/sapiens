@@ -1,0 +1,70 @@
+from mmpretrain.utils.dependency import WITH_MULTIMODAL
+from .base_dataset import BaseDataset
+from .builder import build_dataset
+from .caltech101 import Caltech101
+from .cifar import CIFAR10, CIFAR100
+from .cub import CUB
+from .custom import CustomDataset
+from .dataset_wrappers import KFoldDataset
+from .dtd import DTD
+from .fgvcaircraft import FGVCAircraft
+from .flowers102 import Flowers102
+from .food101 import Food101
+from .imagenet import ImageNet, ImageNet21k
+from .inshop import InShop
+from .mnist import MNIST, FashionMNIST
+from .multi_label import MultiLabelDataset
+from .multi_task import MultiTaskDataset
+from .nlvr2 import NLVR2
+from .oxfordiiitpet import OxfordIIITPet
+from .places205 import Places205
+from .samplers import *  # noqa: F401,F403
+from .stanfordcars import StanfordCars
+from .sun397 import SUN397
+from .transforms import *  # noqa: F401,F403
+from .voc import VOC
+
+__all__ = [
+    'BaseDataset', 'CIFAR10', 'CIFAR100', 'CUB', 'Caltech101', 'CustomDataset',
+    'DTD', 'FGVCAircraft', 'FashionMNIST', 'Flowers102', 'Food101', 'ImageNet',
+    'ImageNet21k', 'InShop', 'KFoldDataset', 'MNIST', 'MultiLabelDataset',
+    'MultiTaskDataset', 'NLVR2', 'OxfordIIITPet', 'Places205', 'SUN397',
+    'StanfordCars', 'VOC', 'build_dataset',
+]
+
+try:
+    from .shutterstock import Shutterstock
+    from .instagram import Instagram
+    from .general_instagram import GeneralInstagram
+    from .dataset_wrappers import CombinedDataset
+    __all__ += ['Shutterstock', 'Instagram', 'CombinedDataset', 'GeneralInstagram']
+
+except Exception as e:
+    print(e)
+    print('\033[93m' + 'Warning: Cannot import airstore! Make sure you are not training from airstore!' + '\033[0m')
+
+if WITH_MULTIMODAL:
+    from .coco_caption import COCOCaption
+    from .coco_retrieval import COCORetrieval
+    from .coco_vqa import COCOVQA
+    from .flamingo import FlamingoEvalCOCOCaption, FlamingoEvalCOCOVQA
+    from .flickr30k_caption import Flickr30kCaption
+    from .flickr30k_retrieval import Flickr30kRetrieval
+    from .gqa_dataset import GQA
+    from .iconqa import IconQA
+    from .infographic_vqa import InfographicVQA
+    from .nocaps import NoCaps
+    from .ocr_vqa import OCRVQA
+    from .refcoco import RefCOCO
+    from .scienceqa import ScienceQA
+    from .textvqa import TextVQA
+    from .visual_genome import VisualGenomeQA
+    from .vizwiz import VizWiz
+    from .vsr import VSR
+
+    __all__.extend([
+        'COCOCaption', 'COCORetrieval', 'COCOVQA', 'FlamingoEvalCOCOCaption',
+        'FlamingoEvalCOCOVQA', 'Flickr30kCaption', 'Flickr30kRetrieval',
+        'RefCOCO', 'VisualGenomeQA', 'ScienceQA', 'NoCaps', 'GQA', 'TextVQA',
+        'VSR', 'VizWiz', 'OCRVQA', 'InfographicVQA', 'IconQA'
+    ])

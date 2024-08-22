@@ -1,0 +1,1 @@
+include mmengine/hub/openmmlab.json mmengine/hub/deprecated.json mmengine/hub/mmcls.json mmengine/hub/torchvision_0.12.json
