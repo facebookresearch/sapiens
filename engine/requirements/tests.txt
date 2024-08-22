@@ -1,0 +1,14 @@
+aim;sys_platform!='win32'
+bitsandbytes
+clearml
+coverage
+dadaptation
+dvclive
+lion-pytorch
+lmdb
+mlflow
+neptune
+parameterized
+pydantic>=1.10.13
+pytest
+transformers

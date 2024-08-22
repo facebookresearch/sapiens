@@ -1,0 +1,56 @@
+Collections:
+  - Name: Deformable DETR
+    Metadata:
+      Training Data: COCO
+      Training Techniques:
+        - AdamW
+        - Multi Scale Train
+        - Gradient Clip
+      Training Resources: 8x V100 GPUs
+      Architecture:
+        - ResNet
+        - Transformer
+    Paper:
+      URL: https://openreview.net/forum?id=gZ9hCDWe6ke
+      Title: 'Deformable DETR: Deformable Transformers for End-to-End Object Detection'
+    README: configs/deformable_detr/README.md
+    Code:
+      URL: https://github.com/open-mmlab/mmdetection/blob/v2.12.0/mmdet/models/detectors/deformable_detr.py#L6
+      Version: v2.12.0
+
+Models:
+  - Name: deformable-detr_r50_16xb2-50e_coco
+    In Collection: Deformable DETR
+    Config: configs/deformable_detr/deformable-detr_r50_16xb2-50e_coco.py
+    Metadata:
+      Epochs: 50
+    Results:
+      - Task: Object Detection
+        Dataset: COCO
+        Metrics:
+          box AP: 44.3
+    Weights: https://download.openmmlab.com/mmdetection/v3.0/deformable_detr/deformable-detr_r50_16xb2-50e_coco/deformable-detr_r50_16xb2-50e_coco_20221029_210934-6bc7d21b.pth
+
+  - Name: deformable-detr-refine_r50_16xb2-50e_coco
+    In Collection: Deformable DETR
+    Config: configs/deformable_detr/deformable-detr-refine_r50_16xb2-50e_coco.py
+    Metadata:
+      Epochs: 50
+    Results:
+      - Task: Object Detection
+        Dataset: COCO
+        Metrics:
+          box AP: 46.2
+    Weights: https://download.openmmlab.com/mmdetection/v3.0/deformable_detr/deformable-detr-refine_r50_16xb2-50e_coco/deformable-detr-refine_r50_16xb2-50e_coco_20221022_225303-844e0f93.pth
+
+  - Name: deformable-detr-refine-twostage_r50_16xb2-50e_coco
+    In Collection: Deformable DETR
+    Config: configs/deformable_detr/deformable-detr-refine-twostage_r50_16xb2-50e_coco.py
+    Metadata:
+      Epochs: 50
+    Results:
+      - Task: Object Detection
+        Dataset: COCO
+        Metrics:
+          box AP: 47.0
+    Weights: https://download.openmmlab.com/mmdetection/v3.0/deformable_detr/deformable-detr-refine-twostage_r50_16xb2-50e_coco/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth

@@ -1,0 +1,56 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+
+from enum import Enum
+from typing import Union
+
+import numpy as np
+from mmengine.utils import is_str
+
+
+class Color(Enum):
+    """An enum that defines common colors.
+
+    Contains red, green, blue, cyan, yellow, magenta, white and black.
+    """
+    red = (0, 0, 255)
+    green = (0, 255, 0)
+    blue = (255, 0, 0)
+    cyan = (255, 255, 0)
+    yellow = (0, 255, 255)
+    magenta = (255, 0, 255)
+    white = (255, 255, 255)
+    black = (0, 0, 0)
+
+
+def color_val(color: Union[Color, str, tuple, int, np.ndarray]) -> tuple:
+    """Convert various input to color tuples.
+
+    Args:
+        color (:obj:`Color`/str/tuple/int/ndarray): Color inputs
+
+    Returns:
+        tuple[int]: A tuple of 3 integers indicating BGR channels.
+    """
+    if is_str(color):
+        return Color[color].value  # type: ignore
+    elif isinstance(color, Color):
+        return color.value
+    elif isinstance(color, tuple):
+        assert len(color) == 3
+        for channel in color:
+            assert 0 <= channel <= 255
+        return color
+    elif isinstance(color, int):
+        assert 0 <= color <= 255
+        return color, color, color
+    elif isinstance(color, np.ndarray):
+        assert color.ndim == 1 and color.size == 3
+        assert np.all((color >= 0) & (color <= 255))
+        color = color.astype(np.uint8)
+        return tuple(color)
+    else:
+        raise TypeError(f'Invalid type for color: {type(color)}')

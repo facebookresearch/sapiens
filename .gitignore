@@ -1,0 +1,16 @@
+pose/data
+pose/Outputs
+pose/checkpoints
+pretrain/data
+pretrain/Outputs
+pretrain/checkpoints
+seg/data
+seg/Outputs
+seg/checkpoints
+__pycache__/
+*.pyc
+*.ipynb_checkpoints
+*.so
+*.DS_Store
+*._*
+*.egg
