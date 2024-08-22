@@ -1,16 +1,12 @@
 pose/data
 pose/Outputs
 pose/checkpoints
-baselines/pytorch-openpose/model
 pretrain/data
 pretrain/Outputs
 pretrain/checkpoints
 seg/data
 seg/Outputs
 seg/checkpoints
-baselines/pifuhd/checkpoints
-baselines/pifuhd/results
-neus2/output
 __pycache__/
 *.pyc
 *.ipynb_checkpoints
