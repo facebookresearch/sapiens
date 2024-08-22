@@ -30,8 +30,6 @@ add_to_gitignore "pose/data"
 add_to_gitignore "pose/Outputs"
 add_to_gitignore "pose/checkpoints"
 
-add_to_gitignore "baselines/pytorch-openpose/model"
-
 add_to_gitignore "pretrain/data"
 add_to_gitignore "pretrain/Outputs"
 add_to_gitignore "pretrain/checkpoints"
@@ -39,11 +37,6 @@ add_to_gitignore "pretrain/checkpoints"
 add_to_gitignore "seg/data"
 add_to_gitignore "seg/Outputs"
 add_to_gitignore "seg/checkpoints"
-
-add_to_gitignore "baselines/pifuhd/checkpoints"
-add_to_gitignore "baselines/pifuhd/results"
-
-add_to_gitignore "neus2/output"
 
 add_to_gitignore "__pycache__/"
 add_to_gitignore "*.pyc"
