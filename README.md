@@ -40,7 +40,7 @@ Sapiens offers a comprehensive suite for human-centric vision tasks (e.g., 2D po
 
 ### Clone the Repository
    ```bash
-   git clone git@github.com:facebookresearch/sapiens.git
+   git clone https://github.com/facebookresearch/sapiens.git
    export SAPIENS_ROOT=/path/to/sapiens
    ```
 
