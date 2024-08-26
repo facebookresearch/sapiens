@@ -1,15 +1,10 @@
-# Copyright (c) Meta Platforms, Inc. and affiliates.
-# All rights reserved.
-#
-# This source code is licensed under the license found in the
-# LICENSE file in the root directory of this source tree.
-
 import os
 import os.path as osp
 import platform
 import shutil
 import sys
 import warnings
+from typing import List, Dict, Tuple, Optional, Union
 from setuptools import find_packages, setup
 
 try:
@@ -22,53 +17,54 @@ except ImportError:
 version_file = 'mmpose/version.py'
 
 
-def get_version():
+def get_version() -> str:
+    """Retrieve the package version from the version file.
+
+    Returns:
+        str: The version of the package.
+    """
     with open(version_file, 'r') as f:
         exec(compile(f.read(), version_file, 'exec'))
     import sys
 
-    # return short version for sdist
+    # Return short version for sdist
     if 'sdist' in sys.argv or 'bdist_wheel' in sys.argv:
         return locals()['short_version']
     else:
         return locals()['__version__']
 
 
-def parse_requirements(fname='requirements.txt', with_version=True):
+def parse_requirements(fname: str = 'requirements.txt', with_version: bool = True) -> List[str]:
     """Parse the package dependencies listed in a requirements file but strips
     specific versioning information.
 
     Args:
-        fname (str): path to requirements file
-        with_version (bool, default=False): if True include version specs
+        fname (str): Path to the requirements file.
+        with_version (bool): If True, include version specifications.
 
     Returns:
-        List[str]: list of requirements items
-
-    CommandLine:
-        python -c "import setup; print(setup.parse_requirements())"
+        List[str]: List of requirements items.
     """
     import re
-    import sys
     from os.path import exists
+
     require_fpath = fname
 
-    def parse_line(line):
+    def parse_line(line: str) -> Dict[str, Optional[Union[str, Tuple[str, str]]]]:
         """Parse information from a line in a requirements text file."""
+        info: Dict[str, Optional[Union[str, Tuple[str, str]]]] = {'line': line}
         if line.startswith('-r '):
             # Allow specifying requirements in other files
             target = line.split(' ')[1]
-            for info in parse_require_file(target):
-                yield info
+            return dict(line=line, package=None, version=None, platform_deps=None, target=target)
         else:
-            info = {'line': line}
             if line.startswith('-e '):
                 info['package'] = line.split('#egg=')[1]
             elif '@git+' in line:
                 info['package'] = line
             else:
                 # Remove versioning from the package
-                pat = '(' + '|'.join(['>=', '==', '>']) + ')'
+                pat = r'(\>=|\==|\>)'
                 parts = re.split(pat, line, maxsplit=1)
                 parts = [p.strip() for p in parts]
 
@@ -77,69 +73,56 @@ def parse_requirements(fname='requirements.txt', with_version=True):
                     op, rest = parts[1:]
                     if ';' in rest:
                         # Handle platform specific dependencies
-                        # http://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-platform-specific-dependencies
-                        version, platform_deps = map(str.strip,
-                                                     rest.split(';'))
+                        version, platform_deps = map(str.strip, rest.split(';'))
                         info['platform_deps'] = platform_deps
                     else:
-                        version = rest  # NOQA
+                        version = rest
                     info['version'] = (op, version)
-
-            if ON_COLAB and info['package'] == 'xtcocotools':
+            if ON_COLAB and info.get('package') == 'xtcocotools':
                 # Due to an incompatibility between the Colab platform and the
                 # pre-built xtcocotools PyPI package, it is necessary to
                 # compile xtcocotools from source on Colab.
                 info = dict(
                     line=info['line'],
                     package='xtcocotools@'
-                    'git+https://github.com/jin-s13/xtcocoapi')
+                    'git+https://github.com/jin-s13/xtcocoapi'
+                )
+            return info
 
-            yield info
-
-    def parse_require_file(fpath):
+    def parse_require_file(fpath: str) -> List[Dict[str, Optional[Union[str, Tuple[str, str]]]]]:
         with open(fpath, 'r') as f:
-            for line in f.readlines():
-                line = line.strip()
-                if line and not line.startswith('#'):
-                    for info in parse_line(line):
-                        yield info
+            return [parse_line(line.strip()) for line in f if line.strip() and not line.startswith('#')]
 
-    def gen_packages_items():
+    def gen_packages_items() -> List[str]:
         if exists(require_fpath):
+            packages = []
             for info in parse_require_file(require_fpath):
                 parts = [info['package']]
                 if with_version and 'version' in info:
                     parts.extend(info['version'])
                 if not sys.version.startswith('3.4'):
-                    # apparently package_deps are broken in 3.4
                     platform_deps = info.get('platform_deps')
-                    if platform_deps is not None:
+                    if platform_deps:
                         parts.append(';' + platform_deps)
                 item = ''.join(parts)
-                yield item
+                packages.append(item)
+            return packages
+        return []
 
-    packages = list(gen_packages_items())
-    return packages
+    return gen_packages_items()
 
 
-def add_mim_extension():
+def add_mim_extension() -> None:
     """Add extra files that are required to support MIM into the package.
 
     These files will be added by creating a symlink to the originals if the
-    package is installed in `editable` mode (e.g. pip install -e .), or by
+    package is installed in `editable` mode (e.g., pip install -e .), or by
     copying from the originals otherwise.
     """
-
-    # parse installment mode
+    # Parse installment mode
     if 'develop' in sys.argv:
-        # installed by `pip install -e .`
-        if platform.system() == 'Windows':
-            mode = 'copy'
-        else:
-            mode = 'symlink'
+        mode = 'copy' if platform.system() == 'Windows' else 'symlink'
     elif 'sdist' in sys.argv or 'bdist_wheel' in sys.argv:
-        # installed by `pip install .`
-        # or create source distribution by `python setup.py sdist`
         mode = 'copy'
     else:
         return
@@ -152,27 +135,27 @@ def add_mim_extension():
     os.makedirs(mim_path, exist_ok=True)
 
     for filename in filenames:
-        if osp.exists(filename):
-            src_path = osp.join(repo_path, filename)
-            tar_path = osp.join(mim_path, filename)
+        src_path = osp.join(repo_path, filename)
+        tar_path = osp.join(mim_path, filename)
 
+        if osp.exists(tar_path):
             if osp.isfile(tar_path) or osp.islink(tar_path):
                 os.remove(tar_path)
             elif osp.isdir(tar_path):
                 shutil.rmtree(tar_path)
 
-            if mode == 'symlink':
-                src_relpath = osp.relpath(src_path, osp.dirname(tar_path))
-                os.symlink(src_relpath, tar_path)
-            elif mode == 'copy':
-                if osp.isfile(src_path):
-                    shutil.copyfile(src_path, tar_path)
-                elif osp.isdir(src_path):
-                    shutil.copytree(src_path, tar_path)
-                else:
-                    warnings.warn(f'Cannot copy file {src_path}.')
+        if mode == 'symlink':
+            src_relpath = osp.relpath(src_path, osp.dirname(tar_path))
+            os.symlink(src_relpath, tar_path)
+        elif mode == 'copy':
+            if osp.isfile(src_path):
+                shutil.copyfile(src_path, tar_path)
+            elif osp.isdir(src_path):
+                shutil.copytree(src_path, tar_path)
             else:
-                raise ValueError(f'Invalid mode {mode}')
+                warnings.warn(f'Cannot copy file {src_path}.')
+        else:
+            raise ValueError(f'Invalid mode {mode}')
 
 
 if __name__ == '__main__':
@@ -208,4 +191,5 @@ if __name__ == '__main__':
             'optional': parse_requirements('requirements/optional.txt'),
             'mim': parse_requirements('requirements/mminstall.txt'),
         },
-        zip_safe=False)
+        zip_safe=False
+    )
