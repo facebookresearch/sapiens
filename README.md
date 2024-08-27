@@ -31,7 +31,10 @@
    <a href='https://about.meta.com/realitylabs/codecavatars/sapiens/'>
       <img src='https://img.shields.io/badge/Sapiens-Page-orange?style=for-the-badge&logo=Google%20chrome&logoColor=white&labelColor=D35400' alt='Project Page'>
    </a>
-
+   <a href="https://huggingface.co/spaces/joselobenitezg/sapiens-demo">
+      <img alt="Spaces" src="https://img.shields.io/badge/Demo-Page-gray?style=for-the-badge&logo=Hugging%20Face&logoColor=white&labelColor=007fd3" alt='Demo Page'>
+   </a>
+</div>
 </p>
 
 Sapiens offers a comprehensive suite for human-centric vision tasks (e.g., 2D pose, part segmentation, depth, normal, etc.). The model family is pretrained on 300 million in-the-wild human images and shows excellent generalization to unconstrained conditions. These models are also designed for extracting high-resolution features, having been natively trained at a 1024 x 1024 image resolution with a 16-pixel patch size.
