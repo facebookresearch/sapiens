@@ -25,7 +25,7 @@ class NocapsSave(COCOCaption):
     """Nocaps evaluation wrapper.
 
     Save the generated captions and transform into coco format.
-    The dumped file can be submitted to the official evluation system.
+    The dumped file can be submitted to the official evaluation system.
 
     Args:
         collect_device (str): Device name used for collecting results from
