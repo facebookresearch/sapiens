@@ -42,7 +42,7 @@ The body-part segmentation model checkpoints are available at,
 | Sapiens-0.3B  | `$SAPIENS_LITE_CHECKPOINT_ROOT/seg/checkpoints/sapiens_0.3b/sapiens_0.3b_goliath_best_goliath_mIoU_7673_epoch_194_$MODE.pt2`
 | Sapiens-0.6B  | `$SAPIENS_LITE_CHECKPOINT_ROOT/seg/checkpoints/sapiens_0.6b/sapiens_0.6b_goliath_best_goliath_mIoU_7777_epoch_178_$MODE.pt2`
 | Sapiens-1B  | `$SAPIENS_LITE_CHECKPOINT_ROOT/seg/checkpoints/sapiens_1b/sapiens_1b_goliath_best_goliath_mIoU_7994_epoch_151_$MODE.pt2`
-| Sapiens-2B  | `$SAPIENS_LITE_CHECKPOINT_ROOT/seg/checkpoints/sapiens_2b/sapiens_2b_goliath_best_goliath_mIoU_8111_epoch_155_$MODE.pt2`
+| Sapiens-2B  | `Coming Soon!`
 
 
 ## Inference Guide
