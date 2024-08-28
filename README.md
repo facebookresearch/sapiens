@@ -36,6 +36,14 @@
 
 Sapiens offers a comprehensive suite for human-centric vision tasks (e.g., 2D pose, part segmentation, depth, normal, etc.). The model family is pretrained on 300 million in-the-wild human images and shows excellent generalization to unconstrained conditions. These models are also designed for extracting high-resolution features, having been natively trained at a 1024 x 1024 image resolution with a 16-pixel patch size.
 
+<p align="center">
+  <img src="./assets/01.gif" alt="01" title="01" width="500"/>
+  <img src="./assets/03.gif" alt="02" title="02" width="500"/><br>
+  <img src="./assets/02.gif" alt="03" title="03" width="500"/>
+  <img src="./assets/04.gif" alt="04" title="04" width="500"/>
+</p>
+
+
 ## 🚀 Getting Started
 
 ### Clone the Repository
