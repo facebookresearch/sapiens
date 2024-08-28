@@ -64,14 +64,11 @@ def inference_model(model, imgs, dtype=torch.bfloat16):
 
 
 def fake_pad_images_to_batchsize(imgs):
-    # if len(imgs) < BATCH_SIZE:
-    #     imgs = imgs + [torch.zeros((imgs[0].shape[0], imgs[0].shape[1], imgs[0].shape[2]))] * (BATCH_SIZE - len(imgs))
-    # return torch.stack(imgs, dim=0)
     return F.pad(imgs, (0, 0, 0, 0, 0, 0, 0, BATCH_SIZE - imgs.shape[0]), value=0)
 
 
 def img_save_and_viz(
-    image, result, output_path, classes, palette, threshold=0.3, title=None, opacity=0.5
+    image, result, output_path, classes, palette, title=None, opacity=0.5, threshold=0.3, 
 ):
     output_file = (
         output_path.replace(".jpg", ".png")
@@ -84,7 +81,7 @@ def img_save_and_viz(
         .replace(".png", "_seg.npy")
     )
 
-    image = image.data.numpy()
+    image = image.data.numpy() ## bgr image
 
     seg_logits = F.interpolate(
         result.unsqueeze(0), size=image.shape[:2], mode="bilinear"
@@ -114,7 +111,8 @@ def img_save_and_viz(
     mask = np.zeros_like(image)
     for label, color in zip(labels, colors):
         mask[sem_seg == label, :] = color
-    vis_image = (image * (1 - opacity) + mask * opacity).astype(np.uint8)
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    vis_image = (image_rgb * (1 - opacity) + mask * opacity).astype(np.uint8)
 
     vis_image = cv2.cvtColor(vis_image, cv2.COLOR_RGB2BGR)
     vis_image = np.concatenate([image, vis_image], axis=1)
