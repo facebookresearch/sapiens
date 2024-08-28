@@ -108,10 +108,10 @@ See [contributing](CONTRIBUTING.md) and the [code of conduct](CODE_OF_CONDUCT.md
 
 ## License
 This project is licensed under [LICENSE](LICENSE).\
-Portions of the project derived from open-source projects are licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+Portions derived from open-source projects are licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 ## 📚 Citation
-If you use Sapiens in your research, please use the following BibTeX entry.
+If you use Sapiens in your research, please consider citing us.
 ```bibtex
 @misc{khirodkar2024_sapiens,
     title={Sapiens: Foundation for Human Vision Models},
