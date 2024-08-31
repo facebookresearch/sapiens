@@ -9,7 +9,10 @@ In general, performance improves with increasing the model size.
 We use an offshelf detector to do top-down pose estimation. Please install, download and set the path appropriately.
 - Install `mmdet`
   ```bash
-  pip install mmdet
+  export SAPIENS_ROOT=/path/to/sapiens
+  cd $SAPIENS_ROOT/engine; pip install -e .
+  cd $SAPIENS_ROOT/cv; pip install -e .
+  cd $SAPIENS_ROOT/det; pip install -e .
   ```
 You can also skip using a bounding box detector by remove the `--det-config` and `--det-checkpoint` from the scripts - in this case the entire image is used as input.
 
