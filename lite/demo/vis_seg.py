@@ -136,7 +136,7 @@ def main():
         "--batch_size",
         "--batch-size",
         type=int,
-        default=32,
+        default=4,
         help="Set batch size to do batch inference. ",
     )
     parser.add_argument(
@@ -208,6 +208,15 @@ def main():
         input_dir = (
             os.path.dirname(image_paths[0]) if image_paths else ""
         )  # Use the directory of the first image path
+    else:
+        raise ValueError("Invalid input, must be a directory or a text file")
+
+    if len(image_names) == 0:
+        raise ValueError("No images found in the input directory")
+
+    # If left unspecified, create an output folder relative to this script.
+    if args.output_root is None:
+        args.output_root = os.path.join(input_dir, "output")
 
     if not os.path.exists(args.output_root):
         os.makedirs(args.output_root)
