@@ -22,6 +22,8 @@ Sapiens-Lite is our optimized "inference-only" solution, offering:
   - `MODE=bfloat16`: Optimized mode for A100 GPUs with PyTorch2.2 or 2.3. Uses [FlashAttention](https://github.com/Dao-AILab/flash-attention) for accelerated inference. Coming Soon!
   - `MODE=float16`: Optimized mode for V100 GPUs with PyTorch2.2 or 2.3. Coming Soon!
 
+- Note to Windows users: installation instructions provided here will work, but you should use the python scripts in `./demo` instead of `./scripts`.
+
 - Please download the checkpoints from [hugging-face](https://huggingface.co/facebook/sapiens/tree/main/sapiens_lite_host).\
   Checkpoints are suffixed with "_$MODE.pt2".\
   You can be selective about only downloading the checkpoints of interest.\
