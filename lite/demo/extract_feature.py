@@ -186,10 +186,10 @@ def main():
         inference_dataset,
         batch_size=args.batch_size,
         shuffle=False,
-        num_workers=max(min(args.batch_size, cpu_count()) // 2, 4),
+        num_workers=max(min(args.batch_size, cpu_count()), 1),
     )
     feat_save_pool = WorkerPool(
-        feat_save, processes=max(min(args.batch_size, cpu_count()) // 2, 4)
+        feat_save, processes=max(min(args.batch_size, cpu_count()), 1)
     )
 
     for batch_idx, (batch_image_name, batch_orig_imgs, batch_imgs) in tqdm(
