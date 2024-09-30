@@ -30,16 +30,6 @@ timings = {}
 BATCH_SIZE = 32
 
 
-def _demo_mm_inputs(batch_size, input_shape):
-    (C, H, W) = input_shape
-    N = batch_size
-    rng = np.random.RandomState(0)
-    imgs = rng.rand(batch_size, C, H, W)
-    if torch.cuda.is_available():
-        imgs = torch.Tensor(imgs).cuda()
-    return imgs
-
-
 def warmup_model(model, batch_size):
     imgs = torch.randn(batch_size, 3, 1024, 768).to(dtype=model.dtype).cuda()
     s = torch.cuda.Stream()
