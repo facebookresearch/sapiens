@@ -29,16 +29,6 @@ timings = {}
 BATCH_SIZE = 64
 
 
-def _demo_mm_inputs(batch_size, input_shape):
-    (C, H, W) = input_shape
-    N = batch_size
-    rng = np.random.RandomState(0)
-    imgs = rng.rand(batch_size, C, H, W)
-    if torch.cuda.is_available():
-        imgs = torch.Tensor(imgs).cuda()
-    return imgs
-
-
 def warmup_model(model, batch_size):
     # Warm up the model with a dummy input.
     imgs = torch.randn(batch_size, 3, 1024, 768).to(dtype=torch.bfloat16).cuda()
@@ -64,9 +54,6 @@ def inference_model(model, imgs, dtype=torch.bfloat16):
 
 
 def fake_pad_images_to_batchsize(imgs):
-    # if len(imgs) < BATCH_SIZE:
-    #     imgs = imgs + [torch.zeros((imgs[0].shape[0], imgs[0].shape[1], imgs[0].shape[2]))] * (BATCH_SIZE - len(imgs))
-    # return torch.stack(imgs, dim=0)
     return F.pad(imgs, (0, 0, 0, 0, 0, 0, 0, BATCH_SIZE - imgs.shape[0]), value=0)
 
 
