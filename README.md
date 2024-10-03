@@ -21,7 +21,7 @@
       .
       <a href="https://shunsukesaito.github.io/"><strong>Shunsuke Saito</strong></a>
    </p>
-   <h3 align="center">ECCV 2024 (Oral)</h3>
+   <h3 align="center">ECCV 2024 - Best Paper Candidate</h3>
 </p>
 
 <p align="center">
