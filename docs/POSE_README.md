@@ -54,7 +54,7 @@ Navigate to the script directory and launch the inference scripts for your desir
   ```bash
   ./keypoints133.sh
   ```
-- For 308 keypoints estimation (uncomment your model config line for inference, we recommend using face crops for better results!):
+- For 308 keypoints estimation (uncomment your model config line for inference):
   ```bash
   ./keypoints308.sh
   ```

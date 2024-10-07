@@ -9,8 +9,8 @@ MODE='bfloat16' ## A100 gpus. faster inference at bfloat16
 SAPIENS_CHECKPOINT_ROOT=$SAPIENS_CHECKPOINT_ROOT/$MODE
 
 #----------------------------set your input and output directories----------------------------------------------
-INPUT='../pose/demo/data/itw_videos/reel2'
-OUTPUT="/home/${USER}/Desktop/sapiens/pose/Outputs/vis/itw_videos/reel2_pose308"
+INPUT='../pose/demo/data/itw_videos/reel1'
+OUTPUT="/home/${USER}/Desktop/sapiens/pose/Outputs/vis/itw_videos/reel1_pose308"
 
 #--------------------------MODEL CARD---------------
 # MODEL_NAME='sapiens_0.3b'; CHECKPOINT=$SAPIENS_CHECKPOINT_ROOT/pose/checkpoints/sapiens_0.3b/sapiens_0.3b_goliath_best_goliath_AP_573_$MODE.pt2
@@ -85,7 +85,8 @@ for ((i=0; i<TOTAL_JOBS; i++)); do
     --input "${INPUT}/image_paths_$((i+1)).txt" \
     --output-root="${OUTPUT}" \
     --radius ${RADIUS} \
-    --kpt-thr ${KPT_THRES} ## add & to process in background
+    --kpt-thr ${KPT_THRES} \
+    --thickness ${LINE_THICKNESS} ## add & to process in background
   # Allow a short delay between starting each job to reduce system load spikes
   sleep 1
 done

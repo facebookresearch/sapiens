@@ -63,13 +63,12 @@ Please download the models from [hugging-face](https://huggingface.co/facebook/s
   ```bash
   ./pose_keypoints133.sh
   ```
-- For 308 keypoints estimation (uncomment your model config line for inference, we recommend using face crops for better results!):
+- For 308 keypoints estimation (uncomment your model config line for inference):
   ```bash
   ./pose_keypoints308.sh
   ```
 Define `INPUT` for your image directory and `OUTPUT` for results. Visualization and keypoints in JSON format are saved to `OUTPUT`. \
-Customize `LINE_THICKNESS`, `RADIUS`, and `KPT_THRES` as needed. Adjust `BATCH_SIZE`, `JOBS_PER_GPU`, `TOTAL_GPUS` and `VALID_GPU_IDS` for multi-GPU configurations. \
-Note, we skip the keypoint skeleton visualization in interest of speed.
+Customize `LINE_THICKNESS`, `RADIUS`, and `KPT_THRES` as needed. Adjust `BATCH_SIZE`, `JOBS_PER_GPU`, `TOTAL_GPUS` and `VALID_GPU_IDS` for multi-GPU configurations.
 
 <p align="center">
   <img src="../assets/keypoints17.gif" alt="Keypoints 17" width="300" height="600" style="margin-right: 10px;"/>

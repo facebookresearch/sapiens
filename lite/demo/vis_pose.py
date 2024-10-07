@@ -26,6 +26,9 @@ from classes_and_palettes import (
     COCO_KPTS_COLORS,
     COCO_WHOLEBODY_KPTS_COLORS,
     GOLIATH_KPTS_COLORS,
+    GOLIATH_SKELETON_INFO,
+    COCO_SKELETON_INFO,
+    COCO_WHOLEBODY_SKELETON_INFO
 )
 from pose_utils import nms, top_down_affine_transform, udp_decode
 
@@ -88,8 +91,8 @@ def batch_inference_topdown(
     return heatmaps.cpu()
 
 
-def img_save_and_viz(
-    img, results, output_path, input_shape, heatmap_scale, kpt_colors, kpt_thr, radius
+def img_save_and_vis(
+    img, results, output_path, input_shape, heatmap_scale, kpt_colors, kpt_thr, radius, skeleton_info, thickness
 ):
     # pred_instances_list = split_instances(result)
     heatmap = results["heatmaps"]
@@ -160,8 +163,21 @@ def img_save_and_viz(
             if not isinstance(color, str):
                 color = tuple(int(c) for c in color[::-1])
             img = cv2.circle(img, (int(kpt[0]), int(kpt[1])), int(radius), color, -1)
-    cv2.imwrite(output_path, img)
+        
+        # draw skeleton
+        for skid, link_info in skeleton_info.items():
+            pt1_idx, pt2_idx = link_info['link']
+            color = link_info['color'][::-1] # BGR
 
+            pt1 = kpts[pt1_idx]; pt1_score = score[pt1_idx]
+            pt2 = kpts[pt2_idx]; pt2_score = score[pt2_idx]
+
+            if pt1_score > kpt_thr and pt2_score > kpt_thr:
+                x1_coord = int(pt1[0]); y1_coord = int(pt1[1])
+                x2_coord = int(pt2[0]); y2_coord = int(pt2[1])
+                cv2.line(img, (x1_coord, y1_coord), (x2_coord, y2_coord), color, thickness=thickness)
+
+    cv2.imwrite(output_path, img)
 
 def fake_pad_images_to_batchsize(imgs):
     return F.pad(imgs, (0, 0, 0, 0, 0, 0, 0, BATCH_SIZE - imgs.shape[0]), value=0)
@@ -341,15 +357,18 @@ def main():
         preprocess_pose, processes=max(min(args.batch_size, cpu_count()), 1)
     )
     img_save_pool = WorkerPool(
-        img_save_and_viz, processes=max(min(args.batch_size, cpu_count()), 1)
+        img_save_and_vis, processes=max(min(args.batch_size, cpu_count()), 1)
     )
 
     KPTS_COLORS = COCO_WHOLEBODY_KPTS_COLORS  ## 133 keypoints
+    SKELETON_INFO = COCO_WHOLEBODY_SKELETON_INFO
 
     if args.num_keypoints == 17:
         KPTS_COLORS = COCO_KPTS_COLORS
+        SKELETON_INFO = COCO_SKELETON_INFO
     elif args.num_keypoints == 308:
         KPTS_COLORS = GOLIATH_KPTS_COLORS
+        SKELETON_INFO = GOLIATH_SKELETON_INFO
 
     for batch_idx, (batch_image_name, batch_orig_imgs, batch_imgs) in tqdm(
         enumerate(inference_dataloader), total=len(inference_dataloader)
@@ -436,6 +455,8 @@ def main():
                 KPTS_COLORS,
                 args.kpt_thr,
                 args.radius,
+                SKELETON_INFO,
+                args.thickness,
             )
             for i, r, img_name in zip(
                 batch_orig_imgs[:valid_images_len],
