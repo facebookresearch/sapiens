@@ -33,9 +33,9 @@ Please download the models from [hugging-face](https://huggingface.co/facebook/s
 
 | Model         | Checkpoint Path
 |---------------|--------------------------------------------------------------------------------------------------
-| Sapiens-0.3B  | `$SAPIENS_CHECKPOINT_ROOT/pose/checkpoints/sapiens_0.3b/sapiens_0.3b_goliath_best_goliath_AP_575.pth`
-| Sapiens-0.6B  | `$SAPIENS_CHECKPOINT_ROOT/pose/checkpoints/sapiens_0.6b/sapiens_0.6b_goliath_best_goliath_AP_600.pth`
-| Sapiens-1B  | `$SAPIENS_CHECKPOINT_ROOT/pose/checkpoints/sapiens_1b/sapiens_1b_goliath_best_goliath_AP_640.pth`
+| Sapiens-0.3B  | `$SAPIENS_CHECKPOINT_ROOT/pose/checkpoints/sapiens_0.3b/sapiens_0.3b_goliath_best_goliath_AP_573.pth`
+| Sapiens-0.6B  | `$SAPIENS_CHECKPOINT_ROOT/pose/checkpoints/sapiens_0.6b/sapiens_0.6b_goliath_best_goliath_AP_609.pth`
+| Sapiens-1B  | `$SAPIENS_CHECKPOINT_ROOT/pose/checkpoints/sapiens_1b/sapiens_1b_goliath_best_goliath_AP_639.pth`
 
 ## Inference Guide
 

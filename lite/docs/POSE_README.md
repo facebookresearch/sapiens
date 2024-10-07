@@ -45,10 +45,9 @@ Please download the models from [hugging-face](https://huggingface.co/facebook/s
 
 | Model         | Checkpoint Path
 |---------------|--------------------------------------------------------------------------------------------------
-| Sapiens-0.3B  | `$SAPIENS_LITE_CHECKPOINT_ROOT/pose/checkpoints/sapiens_0.3b/sapiens_0.3b_goliath_best_goliath_AP_575_$MODE.pt2`
-| Sapiens-0.6B  | `$SAPIENS_LITE_CHECKPOINT_ROOT/pose/checkpoints/sapiens_0.6b/sapiens_0.6b_goliath_best_goliath_AP_600_$MODE.pt2`
-| Sapiens-1B  | `$SAPIENS_LITE_CHECKPOINT_ROOT/pose/checkpoints/sapiens_1b/sapiens_1b_goliath_best_goliath_AP_640_$MODE.pt2`
-
+| Sapiens-0.3B  | `$SAPIENS_LITE_CHECKPOINT_ROOT/pose/checkpoints/sapiens_0.3b/sapiens_0.3b_goliath_best_goliath_AP_573_$MODE.pt2`
+| Sapiens-0.6B  | `$SAPIENS_LITE_CHECKPOINT_ROOT/pose/checkpoints/sapiens_0.6b/sapiens_0.6b_goliath_best_goliath_AP_609_$MODE.pt2`
+| Sapiens-1B  | `$SAPIENS_LITE_CHECKPOINT_ROOT/pose/checkpoints/sapiens_1b/sapiens_1b_goliath_best_goliath_AP_639_$MODE.pt2`
 
 ## Inference Guide
 
