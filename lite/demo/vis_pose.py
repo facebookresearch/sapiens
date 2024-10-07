@@ -247,6 +247,9 @@ def main():
         "--radius", type=int, default=9, help="Keypoint radius for visualization"
     )
     parser.add_argument(
+        "--thickness", type=int, default=-1, help="Keypoint skeleton thickness for visualization"
+    )
+    parser.add_argument(
         "--heatmap-scale", type=int, default=4, help="Heatmap scale for keypoints. Image to heatmap ratio"
     )
     parser.add_argument(
@@ -272,7 +275,9 @@ def main():
         )
 
     assert args.input != ""
-    # assert args.det_config is not None
+    ## if skeleton thickness is not specified, use radius as thickness
+    if args.thickness == -1:
+        args.thickness = args.radius
 
     if len(args.shape) == 1:
         input_shape = (3, args.shape[0], args.shape[0])
