@@ -130,13 +130,10 @@ Portions derived from open-source projects are licensed under [Apache 2.0](https
 ## 📚 Citation
 If you use Sapiens in your research, please consider citing us.
 ```bibtex
-@misc{khirodkar2024_sapiens,
-    title={Sapiens: Foundation for Human Vision Models},
-    author={Khirodkar, Rawal and Bagautdinov, Timur and Martinez, Julieta and Zhaoen, Su and James, Austin and Selednik, Peter and Anderson, Stuart and Saito, Shunsuke},
-    year={2024},
-    eprint={2408.12569},
-    archivePrefix={arXiv},
-    primaryClass={cs.CV},
-    url={https://arxiv.org/abs/2408.12569}
+@article{khirodkar2024sapiens,
+  title={Sapiens: Foundation for Human Vision Models},
+  author={Khirodkar, Rawal and Bagautdinov, Timur and Martinez, Julieta and Zhaoen, Su and James, Austin and Selednik, Peter and Anderson, Stuart and Saito, Shunsuke},
+  journal={arXiv preprint arXiv:2408.12569},
+  year={2024}
 }
 ```
