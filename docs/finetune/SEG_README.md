@@ -57,6 +57,8 @@ Edit `$SAPIENS_ROOT/seg/configs/sapiens_seg/seg_face/sapiens_1b_seg_face-1024x76
 4. (Optional) Adjust hyperparameters like `num_epochs` and `optim_wrapper.optimizer.lr`.
 5. (Optional) Update the class names and color palette. Edit ```CLASSES``` and ```PALETTE``` variables in `$SAPIENS_ROOT/seg/mmseg/datasets/face.py`. This file corresponds to the dataset class used by `dataset_train` in the config file.
 
+**Caution**: If you are using your own segmentation classes, you need to provide the correct seg flip labels for random flipping augmentation. Please modify ```train_pipeline.RandomFlip.swap_seg_labels``` accordingly.
+
 ## 🏋️ 3. Finetuning
 
 The following guide is for Sapiens-1B. Simply choose the config file from [here](../../seg/configs/sapiens_seg/seg_face/) to use other backbones.\
