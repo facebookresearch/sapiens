@@ -1,14 +1,13 @@
-ARG PYTORCH="2.4.1"
-ARG CUDA="12.1"
-ARG CUDNN="9"
-
+#ARG PYTORCH="2.4.1"
+#ARG CUDA="12.1"
+#ARG CUDNN="9"
 #FROM pytorch/pytorch:${PYTORCH}-cuda${CUDA}-cudnn${CUDNN}-devel
+
 FROM nvcr.io/nvidia/pytorch:23.12-py3
 
 ENV TORCH_CUDA_ARCH_LIST="6.0 6.1 7.0+PTX"
 ENV TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
 ENV CMAKE_PREFIX_PATH="$(dirname $(which conda))/../"
-#ENV PYTHONPATH="/root/miniconda/lib/python3.10/site-packages"
 
 RUN apt-get update && apt-get install -y git wget nano ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 libgl1-mesa-glx\
     && apt-get clean \
@@ -46,6 +45,6 @@ RUN conda --version && \
     cd /workspace/sapiens/cv && pip install -e . && \
     cd /workspace/sapiens/det && pip install -e .
 
-RUN echo "source activate {CONDA_ENV}" > ~/.bashrc
+RUN echo "source activate ${CONDA_ENV}" > ~/.bashrc
 
 ENTRYPOINT ["/bin/bash"]
