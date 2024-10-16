@@ -56,6 +56,14 @@ conda activate sapiens_lite
 conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
 pip install opencv-python tqdm json-tricks
 ```
+## 🐋 Docker
+Install Docker in your computer using the [official instructions](https://docs.docker.com/engine/install/). Then, build the project and create a container as follows:
+```
+cd sapiens/lite
+sudo docker build -t sapiens_lite .
+sudo docker run -it --gpus all -v $HOME/volume:/volume --name sapiens --shm-size 16G sapiens_lite
+```
+You can adjust the shared memory and volume accordingly.
 
 ## 🌟 Sapiens-Lite Inference
 
