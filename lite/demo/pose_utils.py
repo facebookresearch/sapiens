@@ -251,7 +251,7 @@ def top_down_affine_transform(img, bbox, padding=1.25):
 
     h, w = img.shape[:2]
     warp_size = (int(w), int(h))
-    aspect_ratio = w / h
+    aspect_ratio = 768 / 1024 # fixed aspect ratio
 
     # reshape bbox to fixed aspect ratio
     box_w, box_h = np.hsplit(scale, [1])
