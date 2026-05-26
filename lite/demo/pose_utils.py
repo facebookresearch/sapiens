@@ -269,6 +269,49 @@ def top_down_affine_transform(img, bbox, padding=1.25):
 
     return img, [center], [scale]
 
+def top_down_affine_transform_by_shape(img, bbox, shape, padding=1.25):
+    """
+    Args:
+        img (np.ndarray): Image to be transformed.
+        bbox (np.ndarray): Bounding box to be transformed.
+        shape (tuple): Desired output shape (height, width).
+        padding (int): Padding size.
+
+    Returns:
+        np.ndarray: Transformed image.
+        np.ndarray: Transformed bounding box.
+    """
+    dim = bbox.ndim
+    if dim == 1:
+        bbox = bbox[None, :]
+
+    x1, y1, x2, y2 = np.hsplit(bbox, [1, 2, 3])
+    center = np.hstack([x1 + x2, y1 + y2]) * 0.5
+    scale = np.hstack([x2 - x1, y2 - y1]) * padding
+
+    if dim == 1:
+        center = center[0]
+        scale = scale[0]
+
+    h, w = shape
+    warp_size = (int(w), int(h))
+    aspect_ratio = w / h
+
+    # reshape bbox to fixed aspect ratio
+    box_w, box_h = np.hsplit(scale, [1])
+    scale = np.where(box_w > box_h * aspect_ratio,
+                            np.hstack([box_w, box_w / aspect_ratio]),
+                            np.hstack([box_h * aspect_ratio, box_h]))
+
+    rot = 0.
+
+    warp_mat = get_udp_warp_matrix(
+            center, scale, rot, output_size=(w, h))
+
+    img = cv2.warpAffine(
+            img, warp_mat, warp_size, flags=cv2.INTER_LINEAR)
+
+    return img, [center], [scale]
 
 def nms(dets: np.ndarray, thr: float):
     """Greedily select boxes with high confidence and overlap <= thr.

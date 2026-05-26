@@ -30,7 +30,7 @@ from classes_and_palettes import (
     COCO_SKELETON_INFO,
     COCO_WHOLEBODY_SKELETON_INFO
 )
-from pose_utils import nms, top_down_affine_transform, udp_decode
+from pose_utils import nms, top_down_affine_transform, udp_decode, top_down_affine_transform_by_shape
 
 from tqdm import tqdm
 
@@ -55,7 +55,7 @@ timings = {}
 BATCH_SIZE = 48
 
 
-def preprocess_pose(orig_img, bboxes_list, input_shape, mean, std):
+def preprocess_pose_original(orig_img, bboxes_list, input_shape, mean, std):
     """Preprocess pose images and bboxes."""
     preprocessed_images = []
     centers = []
@@ -75,6 +75,23 @@ def preprocess_pose(orig_img, bboxes_list, input_shape, mean, std):
         scales.extend(scale)
     return preprocessed_images, centers, scales
 
+def preprocess_pose(orig_img, bboxes_list, input_shape, mean, std, padding = 1.25):
+    """Preprocess pose images and bboxes."""
+    preprocessed_images = []
+    centers = []
+    scales = []
+    for bbox in bboxes_list:
+        img, center, scale = top_down_affine_transform_by_shape(orig_img.copy(), bbox, (input_shape[0], input_shape[1]), padding)
+        img = img.transpose(2, 0, 1)
+        img = torch.from_numpy(img)
+        img = img[[2, 1, 0], ...].float()
+        mean = torch.Tensor(mean).view(-1, 1, 1)
+        std = torch.Tensor(std).view(-1, 1, 1)
+        img = (img - mean) / std
+        preprocessed_images.append(img)
+        centers.extend(center)
+        scales.extend(scale)
+    return preprocessed_images, centers, scales
 
 def batch_inference_topdown(
     model: nn.Module,
@@ -258,8 +275,12 @@ def main():
         default=False,
         help="Flip the input image horizontally and inference again",
     )
+    parser.add_argument(
+        "--padding", type=float, default=0.25, help="image bbox padding scale"
+    )
 
     args = parser.parse_args()
+    padding = args.padding + 1
 
     if args.det_config is None or args.det_config == "":
         use_det = False
@@ -327,16 +348,28 @@ def main():
     BATCH_SIZE = args.batch_size
 
     input = args.input
-    image_names = []
-
     # Check if the input is a directory or a text file
+    output_sub_folder_names = []
+    image_names = []
     if os.path.isdir(input):
+        image_names = []
         input_dir = input  # Set input_dir to the directory specified in input
-        image_names = [
-            image_name
-            for image_name in sorted(os.listdir(input_dir))
-            if image_name.endswith(".jpg") or image_name.endswith(".png")
-        ]
+        for input_image in sorted(os.listdir(input_dir)):
+            camera_dir = os.path.join(input_dir, input_image)
+            if os.path.isdir(camera_dir):
+                for image_name in sorted(os.listdir(camera_dir)):
+                    if image_name.endswith(".jpg") or image_name.endswith(".png"):
+                        img_file = os.path.join(input_image, image_name)
+                        image_names.append(img_file)
+                output_sub_folder_names.append(input_image)
+            else:
+                if input_image.endswith(".jpg") or input_image.endswith(".png"):
+                    image_names.append(input_image)
+        # image_names = [
+        #     image_name
+        #     for image_name in sorted(os.listdir(input_dir))
+        #     if image_name.endswith(".jpg") or image_name.endswith(".png")
+        # ]
     elif os.path.isfile(input) and input.endswith(".txt"):
         # If the input is a text file, read the paths from it and set input_dir to the directory of the first image
         with open(input, "r") as file:
@@ -347,6 +380,11 @@ def main():
         input_dir = (
             os.path.dirname(image_paths[0]) if image_paths else ""
         )  # Use the directory of the first image path
+
+    for output_sub_folder_name in output_sub_folder_names:
+        output_sub_dir = os.path.join(args.output_root, output_sub_folder_name)
+        if not os.path.exists(output_sub_dir):
+            os.makedirs(output_sub_dir)
 
     scale = args.heatmap_scale
     inference_dataset = AdhocImageDataset(
@@ -408,6 +446,7 @@ def main():
                 (input_shape[1], input_shape[2]),
                 [123.5, 116.5, 103.5],
                 [58.5, 57.0, 57.5],
+                padding
             )
             for i, bbox_list in zip(batch_orig_imgs.numpy(), bboxes_batch)
         ]
@@ -454,7 +493,7 @@ def main():
             (
                 i.numpy(),
                 r,
-                os.path.join(args.output_root, os.path.basename(img_name)),
+                os.path.join(args.output_root, os.path.relpath(img_name, args.input)),
                 (input_shape[2], input_shape[1]),
                 scale,
                 KPTS_COLORS,
