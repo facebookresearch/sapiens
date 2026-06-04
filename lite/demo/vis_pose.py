@@ -4,16 +4,13 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 
-import itertools
 import multiprocessing as mp
 import os
 import time
 import warnings
 from argparse import ArgumentParser
-from collections import defaultdict
-from functools import partial
-from multiprocessing import cpu_count, Pool, Process
-from typing import List, Optional, Sequence, Union
+from multiprocessing import cpu_count
+from typing import List, Union
 
 import cv2
 import json_tricks as json
@@ -22,18 +19,17 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from adhoc_image_dataset import AdhocImageDataset
+from adhoc_video_dataset import AdhocVideoDataset
 from classes_and_palettes import (
     COCO_KPTS_COLORS,
+    COCO_SKELETON_INFO,
     COCO_WHOLEBODY_KPTS_COLORS,
+    COCO_WHOLEBODY_SKELETON_INFO,
     GOLIATH_KPTS_COLORS,
     GOLIATH_SKELETON_INFO,
-    COCO_SKELETON_INFO,
-    COCO_WHOLEBODY_SKELETON_INFO
 )
 from pose_utils import nms, top_down_affine_transform, udp_decode
-
 from tqdm import tqdm
-
 from worker_pool import WorkerPool
 
 try:
@@ -92,7 +88,16 @@ def batch_inference_topdown(
 
 
 def img_save_and_vis(
-    img, results, output_path, input_shape, heatmap_scale, kpt_colors, kpt_thr, radius, skeleton_info, thickness
+    img,
+    results,
+    output_path,
+    input_shape,
+    heatmap_scale,
+    kpt_colors,
+    kpt_thr,
+    radius,
+    skeleton_info,
+    thickness,
 ):
     # pred_instances_list = split_instances(result)
     heatmap = results["heatmaps"]
@@ -163,30 +168,43 @@ def img_save_and_vis(
             if not isinstance(color, str):
                 color = tuple(int(c) for c in color[::-1])
             img = cv2.circle(img, (int(kpt[0]), int(kpt[1])), int(radius), color, -1)
-        
+
         # draw skeleton
         for skid, link_info in skeleton_info.items():
-            pt1_idx, pt2_idx = link_info['link']
-            color = link_info['color'][::-1] # BGR
+            pt1_idx, pt2_idx = link_info["link"]
+            color = link_info["color"][::-1]  # BGR
 
-            pt1 = kpts[pt1_idx]; pt1_score = score[pt1_idx]
-            pt2 = kpts[pt2_idx]; pt2_score = score[pt2_idx]
+            pt1 = kpts[pt1_idx]
+            pt1_score = score[pt1_idx]
+            pt2 = kpts[pt2_idx]
+            pt2_score = score[pt2_idx]
 
             if pt1_score > kpt_thr and pt2_score > kpt_thr:
-                x1_coord = int(pt1[0]); y1_coord = int(pt1[1])
-                x2_coord = int(pt2[0]); y2_coord = int(pt2[1])
-                cv2.line(img, (x1_coord, y1_coord), (x2_coord, y2_coord), color, thickness=thickness)
+                x1_coord = int(pt1[0])
+                y1_coord = int(pt1[1])
+                x2_coord = int(pt2[0])
+                y2_coord = int(pt2[1])
+                cv2.line(
+                    img,
+                    (x1_coord, y1_coord),
+                    (x2_coord, y2_coord),
+                    color,
+                    thickness=thickness,
+                )
 
     cv2.imwrite(output_path, img)
 
+
 def fake_pad_images_to_batchsize(imgs):
     return F.pad(imgs, (0, 0, 0, 0, 0, 0, 0, BATCH_SIZE - imgs.shape[0]), value=0)
+
 
 def load_model(checkpoint, use_torchscript=False):
     if use_torchscript:
         return torch.jit.load(checkpoint)
     else:
         return torch.export.load(checkpoint).module()
+
 
 def main():
     """Visualize the demo images.
@@ -195,7 +213,9 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("pose_checkpoint", help="Checkpoint file for pose")
     parser.add_argument("--det-config", default="", help="Config file for detection")
-    parser.add_argument("--det-checkpoint", default="", help="Checkpoint file for detection")
+    parser.add_argument(
+        "--det-checkpoint", default="", help="Checkpoint file for detection"
+    )
     parser.add_argument("--input", type=str, default="", help="Image/Video file")
     parser.add_argument(
         "--num_keypoints",
@@ -247,10 +267,16 @@ def main():
         "--radius", type=int, default=9, help="Keypoint radius for visualization"
     )
     parser.add_argument(
-        "--thickness", type=int, default=-1, help="Keypoint skeleton thickness for visualization"
+        "--thickness",
+        type=int,
+        default=-1,
+        help="Keypoint skeleton thickness for visualization",
     )
     parser.add_argument(
-        "--heatmap-scale", type=int, default=4, help="Heatmap scale for keypoints. Image to heatmap ratio"
+        "--heatmap-scale",
+        type=int,
+        default=4,
+        help="Heatmap scale for keypoints. Image to heatmap ratio",
     )
     parser.add_argument(
         "--flip",
@@ -309,7 +335,7 @@ def main():
         detector.cfg = adapt_mmdet_pipeline(detector.cfg)
 
     # build pose estimator
-    USE_TORCHSCRIPT = '_torchscript' in args.pose_checkpoint
+    USE_TORCHSCRIPT = "_torchscript" in args.pose_checkpoint
 
     # build the model from a checkpoint file
     pose_estimator = load_model(args.pose_checkpoint, USE_TORCHSCRIPT)
@@ -318,7 +344,9 @@ def main():
     if not USE_TORCHSCRIPT:
         dtype = torch.half if args.fp16 else torch.bfloat16
         pose_estimator.to(dtype)
-        pose_estimator = torch.compile(pose_estimator, mode="max-autotune", fullgraph=True)
+        pose_estimator = torch.compile(
+            pose_estimator, mode="max-autotune", fullgraph=True
+        )
     else:
         dtype = torch.float32  # TorchScript models use float32
         pose_estimator = pose_estimator.to(args.device)
@@ -337,6 +365,9 @@ def main():
             for image_name in sorted(os.listdir(input_dir))
             if image_name.endswith(".jpg") or image_name.endswith(".png")
         ]
+        inference_dataset = AdhocImageDataset(
+            [os.path.join(input_dir, img_name) for img_name in image_names],
+        )  # do not provide preprocess args for detector as we use mmdet
     elif os.path.isfile(input) and input.endswith(".txt"):
         # If the input is a text file, read the paths from it and set input_dir to the directory of the first image
         with open(input, "r") as file:
@@ -347,11 +378,15 @@ def main():
         input_dir = (
             os.path.dirname(image_paths[0]) if image_paths else ""
         )  # Use the directory of the first image path
+        inference_dataset = AdhocImageDataset(
+            [os.path.join(input_dir, img_name) for img_name in image_names],
+        )  # do not provide preprocess args for detector as we use mmdet
+    elif os.path.isfile(input) and input.endswith(".mp4"):
+        input_dir = os.path.dirname(input)
+        inference_dataset = AdhocVideoDataset(input)
+        image_names = list(range(len(inference_dataset)))
 
     scale = args.heatmap_scale
-    inference_dataset = AdhocImageDataset(
-        [os.path.join(input_dir, img_name) for img_name in image_names],
-    )  # do not provide preprocess args for detector as we use mmdet
     inference_dataloader = torch.utils.data.DataLoader(
         inference_dataset,
         batch_size=args.batch_size,
@@ -378,7 +413,6 @@ def main():
     for batch_idx, (batch_image_name, batch_orig_imgs, batch_imgs) in tqdm(
         enumerate(inference_dataloader), total=len(inference_dataloader)
     ):
-
         orig_img_shape = batch_orig_imgs.shape
         valid_images_len = len(batch_orig_imgs)
         if use_det:
@@ -394,7 +428,9 @@ def main():
         for i, bboxes in enumerate(bboxes_batch):
             if len(bboxes) == 0:
                 bboxes_batch[i] = np.array(
-                    [[0, 0, orig_img_shape[1], orig_img_shape[2]]] # orig_img_shape: B H W C
+                    [
+                        [0, 0, orig_img_shape[1], orig_img_shape[2]]
+                    ]  # orig_img_shape: B H W C
                 )
 
         img_bbox_map = {}
@@ -422,7 +458,7 @@ def main():
         n_pose_batches = (len(pose_imgs) + args.batch_size - 1) // args.batch_size
 
         # use this to tell torch compiler the start of model invocation as in 'flip' mode the tensor output is overwritten
-        torch.compiler.cudagraph_mark_step_begin()  
+        torch.compiler.cudagraph_mark_step_begin()
         pose_results = []
         for i in range(n_pose_batches):
             imgs = torch.stack(
