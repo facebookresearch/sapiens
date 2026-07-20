@@ -51,8 +51,8 @@ if TORCH_VERSION != 'parrots' and digit_version(TORCH_VERSION) < digit_version(
                 raise RuntimeError(
                     'Only one file(not dir) is allowed in the zipfile')
             f.extractall(model_dir)
-            extraced_name = members[0].filename
-            extracted_file = os.path.join(model_dir, extraced_name)
+            extracted_name = members[0].filename
+            extracted_file = os.path.join(model_dir, extracted_name)
         return torch.load(extracted_file, map_location=map_location)
 
     def load_url(url,
